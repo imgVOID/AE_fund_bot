@@ -1,0 +1,8 @@
+mcstatus~=8.0.0
+aiogram~=2.19
+pandas~=1.4.0
+aiosqlite~=0.17.0
+APScheduler~=3.8.1
+environs~=8.0.0
+file_read_backwards
+tabulate
