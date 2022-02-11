@@ -22,7 +22,6 @@ def increment_replies(message):
                 username = 'Не указано'
             else:
                 username = forward_author.first_name
-
             db.user_create(
                 chat_id=message.chat.id, user_id=forward_author.id, username=username,
                 signature=author_signature
@@ -31,7 +30,6 @@ def increment_replies(message):
             db.user_create_signature(
                 chat_id=message.chat.id, user_id=forward_author.id, signature=author_signature
             )
-
         db.increment_user_replies(
             chat_id=message.chat.id, user_id=forward_author.id, signature=message.reply_to_message.author_signature
         ) if forward_author.id != message.from_user.id or original_author_signature != author_signature else None
@@ -42,7 +40,12 @@ def increment_replies(message):
     content_types=ContentTypes.TEXT
 )
 async def group_activity_counter(message: Message):
-    username = message.from_user.username if message.from_user.username is not None else message.from_user.first_name
+    username = [
+        username for username in [
+            message.from_user.username, message.from_user.first_name, message.from_user.last_name
+        ] if username is not None
+    ]
+    username = username[0] if username[0] else "Не указано"
     db.user_create(
         chat_id=message.chat.id, user_id=message.from_user.id, username=username
     )

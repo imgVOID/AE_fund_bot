@@ -19,9 +19,8 @@ async def get_statistics_dump_today(message: Message):
         await message.reply(str(e))
     else:
         today_date = '.'.join(date_time)
-        data_html = f"{today_date}\n<pre>{data}</pre>"
-        if len(data_html) < 3500:
-            await message.reply(data_html, parse_mode="html")
+        if len(data) < 3500:
+            await message.reply(f"{today_date}\n<pre>{data}</pre>", parse_mode="html")
         else:
             await message.reply_document(InputFile(BytesIO(
                 bytes(f"{today_date}\n{data}", encoding="utf-8"),

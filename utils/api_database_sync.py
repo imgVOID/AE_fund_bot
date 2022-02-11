@@ -38,6 +38,14 @@ class SQLite:
         except Exception as e:
             return e
 
+    @staticmethod
+    def __dataset_clean(df):
+        df["total"] = df['messages'] + df['replies']
+        df = df[(df.username != "None") & (df.username != "0")]
+        return df.sort_values('total', ascending=False).rename(
+            columns={'username': 'name', 'messages': 'm', 'replies': 'r'}
+        )
+
     @property
     def groups(self):
         return self.__groups
@@ -68,26 +76,6 @@ class SQLite:
             """
         )
 
-    def backup_activity(self, group_id, path, date_time):
-        db_df = read_sql(f"SELECT * FROM 'users{group_id}'", self.__conn)
-        try:
-            makedirs(path)
-        except FileExistsError:
-            pass
-        finally:
-            db_df.to_csv(f'{path}/Day {date_time[1]}.csv', index=False)
-            self.__clear_users_table(group_id)
-
-    def get_activity_today(self, group_id):
-        try:
-            db_df = read_sql(f"SELECT * FROM 'users{group_id}'", self.__conn)
-        except DatabaseError:
-            raise ValueError("Пожалуйста, введите ID группы.")
-        else:
-            return db_df.drop(columns='user_id').rename(
-                columns={'username': 'name', 'messages': 'm', 'replies': 'r'}
-            ).to_markdown(index=False)
-
     def increment_user_messages(cls, chat_id, user_id, signature=None):
         return cls.__run_command(f"""
         UPDATE 'users{chat_id}'
@@ -101,3 +89,24 @@ class SQLite:
         SET replies = replies + 1 
         WHERE {f'user_id={user_id}' if not signature else f"username='{signature}'"}
         """)
+
+    def backup_activity(self, group_id, path, date_time):
+        db_df = read_sql(f"SELECT * FROM 'users{group_id}'", self.__conn)
+        try:
+            makedirs(path)
+        except FileExistsError:
+            pass
+        finally:
+            db_df = self.__dataset_clean(db_df)
+            db_df.to_csv(f'{path}/Day {date_time[1]}.csv', index=False)
+            self.__clear_users_table(group_id)
+
+    def get_activity_today(self, group_id):
+        try:
+            db_df = read_sql(f"SELECT * FROM 'users{group_id}'", self.__conn)
+        except DatabaseError:
+            raise ValueError("Пожалуйста, введите ID группы.")
+        else:
+            return self.__dataset_clean(db_df).drop(
+                columns=['user_id', 'total']
+            ).to_markdown(index=False)
