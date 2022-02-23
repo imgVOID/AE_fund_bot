@@ -4,8 +4,8 @@ from data.hello_message import get_hello_message_group
 
 class Globals:
     __slots__ = {
-        "__BOT_TOKEN", "__ADMINS", "__CHANNELS", "__GROUPS",
-        "STATISTICS_MAIN_PATH", "HELLO_MESSAGE", "SCHEDULER_TIMINGS", "SCHEDULED_TASKS_IDS", "LOGGING_APPS"
+        "__BOT_TOKEN", "__ADMINS", "__CHANNELS", "__GROUPS", "__GROUPS_ALARM",
+        "STATISTICS_MAIN_PATH", "HELLO_MESSAGE", "SCHEDULER_TIMINGS", "SCHEDULED_TASKS_IDS", "LOGGING_APPS",
     }
 
     def __init__(self, token, admins, channels, groups):
@@ -13,6 +13,7 @@ class Globals:
         self.__CHANNELS = tuple(channels)
         self.__ADMINS = tuple(int(admin_id) for admin_id in admins)
         self.__GROUPS = tuple(int(group_id) for group_id in groups)
+        self.__GROUPS_ALARM = tuple(int(group_id) for group_id in groups)
         self.STATISTICS_MAIN_PATH = f'{sep.join(__file__.split(sep)[:-2])}/data/history_activity'
         self.HELLO_MESSAGE = get_hello_message_group()
         self.LOGGING_APPS = {"aiogram": "info", "apscheduler": "info"}
@@ -55,3 +56,7 @@ class Globals:
     @property
     def groups(self):
         return self.__GROUPS
+
+    @property
+    def groups_alarm(self):
+        return self.__GROUPS_ALARM

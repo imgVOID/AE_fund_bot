@@ -1,4 +1,6 @@
 import logging
+import websockets
+import asyncio
 from aiogram import executor
 from loader import dp, scheduler, config
 from handlers.groups.scheduled_newsletter_minecraft import get_minecraft_info
@@ -7,6 +9,7 @@ from handlers.admins.scheduled_logs_deletion import scheduled_logs_clean
 from handlers.admins.scheduled_statistics_backup import save_statistics_dump
 from utils.set_bot_commands import set_default_commands
 from utils.scripts_logging import setup_logging
+from sockets.websocket_server import websocket_server_start
 
 
 def schedule_jobs():
@@ -48,7 +51,11 @@ if __name__ == '__main__':
     try:
         setup_logging(config.LOGGING_APPS['aiogram'], 'aiogram')
         setup_logging(config.LOGGING_APPS['apscheduler'], 'apscheduler')
+        asyncio.get_event_loop().run_until_complete(
+            websockets.serve(websocket_server_start, 'localhost', 8765)
+        )
         scheduler.start()
         executor.start_polling(dp, on_startup=on_startup)
+
     except Exception as e:
         logging.exception(e)
