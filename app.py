@@ -52,7 +52,7 @@ if __name__ == '__main__':
         setup_logging(config.LOGGING_APPS['aiogram'], 'aiogram')
         setup_logging(config.LOGGING_APPS['apscheduler'], 'apscheduler')
         asyncio.get_event_loop().run_until_complete(
-            websockets.serve(websocket_server_start, 'localhost', 8765)
+            websockets.serve(websocket_server_start, '0.0.0.0', 8765)
         )
         scheduler.start()
         executor.start_polling(dp, on_startup=on_startup)

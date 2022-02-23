@@ -7,5 +7,3 @@ environs~=8.0.0
 file_read_backwards
 tabulate
 websockets
-websocket-client
-websocket_server
