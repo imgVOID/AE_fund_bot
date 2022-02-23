@@ -32,7 +32,7 @@ async def get_statistics_dump_today(message: Message):
     commands={'statistics_yesterday'}, content_types=ContentTypes.TEXT
 )
 async def get_statistics_dump_yesterday(message: Message):
-    yesterday = datetime.utcnow().date() - timedelta(days=1)
+    yesterday = datetime.now().date() - timedelta(days=1)
     date_time = (yesterday.strftime('%m.%Y'), yesterday.strftime('%d'))
     media = MediaGroup()
     for group_id in config.groups:
